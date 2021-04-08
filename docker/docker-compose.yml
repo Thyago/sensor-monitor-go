@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password --sql_mode=""
+    restart: always
+    environment:
+      MYSQL_DATABASE: sensormonitor
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - 3306:3306
+    volumes:
+      - dbvol:/var/lib/mysql
+    profiles:
+      - dev
+      - test
+      
+  sensormonitor:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_NAME: sensormonitor
+    ports:
+      - 8080:8080
+    profiles:
+      - dev
+      
+  sensormonitor_test:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.test
+    restart: "no"
+    depends_on:
+      - db
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_NAME: sensormonitor_test
+      SERVER_PORT: 8081
+    ports:
+      - 8081:8081
+    profiles:
+      - test
+      
+  sensormonitorview:
+    image: 'bitnami/apache:latest'
+    ports:
+      - 80:8081
+      - 443:8443
+    environment:
+      APACHE_HTTP_PORT_NUMBER: 8081
+    volumes:
+      - ../public:/app
+    profiles:
+      - dev
+      
+volumes:
+  dbvol:

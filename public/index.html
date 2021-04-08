@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sensor Monitor Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/linechart1.js"></script>
+<style>
+#parinTemperatureChart { max-width: 100%; max-height: 80vh }
+</style>
+</head>
+<body>
+
+<h1>Sensor Monitor Viewer</h1>
+
+<canvas id="parinTemperatureChart" width="400" height="400"></canvas>
+<script>sensorLineChart("parinTemperatureChart", 84.3, "http://localhost:8080/v1/sensors/1/numeric-data");</script>
+
+</body>
+</html>
