@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/go-co-op/gocron"
 	"github.com/thyago/sensor-monitor-go/config"
 	"github.com/thyago/sensor-monitor-go/controllers"
 	"github.com/thyago/sensor-monitor-go/db"
@@ -31,13 +29,8 @@ func main() {
 	)
 
 	// Create background scheduler to process active sensors
-	routines.ProcessSensors(db)
-	gc := gocron.NewScheduler(time.UTC)
-	_, err = gc.Every(config.Config.ParinSensorCheckFrequency).Seconds().Do(func() { routines.ProcessSensors(db) })
-	if err != nil {
-		fmt.Printf("Failed to run: %v", err)
-		return
-	}
+	sched := routines.NewScheduler(db)
+	go sched.Run()
 
 	// Create server
 	serv := controllers.NewServer(db)

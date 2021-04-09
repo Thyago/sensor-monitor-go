@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -27,9 +28,10 @@ func LoadConfig() {
 	if dbPort == "" {
 		dbPort = "3306"
 	}
-	parinSensorCheckFrequency, err := strconv.ParseInt(os.Getenv("PARIN_SENSOR_CHECK_FREQUENCY"), 110, 16)
+	parinSensorCheckFrequency, err := strconv.ParseInt(os.Getenv("PARIN_SENSOR_CHECK_FREQUENCY"), 10, 16)
 	if err != nil {
 		parinSensorCheckFrequency = 10
+		fmt.Printf("PARIN_SENSOR_CHECK_FREQUENCY set to %v (%v)", parinSensorCheckFrequency, err)
 	}
 
 	Config = appConfig{
