@@ -30,6 +30,9 @@ services:
       DB_PASSWORD: password
       DB_HOST: db
       DB_NAME: sensormonitor
+      PARIN_API_KEY: w3HkNadqoJ2KKtM1hgOn76RhGfwdi2dH1E2FW1sZ
+      PARIN_SENSOR_CHECK_FREQUENCY: 110
+      SERVER_PORT: 8080
     ports:
       - 8080:8080
     profiles:
@@ -47,9 +50,11 @@ services:
       DB_PASSWORD: password
       DB_HOST: db
       DB_NAME: sensormonitor_test
-      SERVER_PORT: 8081
+      PARIN_API_KEY: w3HkNadqoJ2KKtM1hgOn76RhGfwdi2dH1E2FW1sZ
+      PARIN_SENSOR_CHECK_FREQUENCY: 110
+      SERVER_PORT: 8082
     ports:
-      - 8081:8081
+      - 8082:8082
     profiles:
       - test
       
