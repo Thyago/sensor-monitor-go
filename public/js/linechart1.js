@@ -1,41 +1,62 @@
-var sensorLineChart = function(elementId, minTemperature, dataUrl) {
-	var url = new URL(dataUrl);
-	var urlParams = new URLSearchParams(url.search.slice(1));
-	var startDate = new Date();
-	startDate.setHours(startDate.getHours() - 6);
-	urlParams.append('start', startDate.toISOString());
-	var endDate = new Date();
-	urlParams.append('end', endDate.toISOString());
-	urlParams.append('dimension', 'minute');
+var loadChart = function(chartElementId, formElementId, dataUrl, options) {
+	var chart = null;
 
-	var horizontalLabels = [];
-	var datasetData = [];
-	var maxTemperature = minTemperature + 10;
+	var formElement = document.getElementById(formElementId);
+	formElement.onsubmit = function() {
+		var minValue = parseFloat(formElement.querySelector('#minValue').value);
+		var dimension = formElement.querySelector("#dimension").value;
+		buildLineChart({ minValue: minValue, dimension: dimension });
+		return false;
+	}
+
+	var buildLineChart = function(extraOptions) {
+		var options = Object.assign(extraOptions, options);
+		var url = new URL(dataUrl);
+		var urlParams = new URLSearchParams(url.search.slice(1));
+		var startDate = new Date();
+		startDate.setHours(startDate.getHours() - 6);
+		urlParams.append('start', startDate.toISOString());
+		var endDate = new Date();
+		urlParams.append('end', endDate.toISOString());
+		urlParams.append('dimension', options.dimension);
 	
-	getJSON(dataUrl + '?' + urlParams, function(err, json) {
-		if (err) {
-			alert(err);
-			return;
-		}
+		var horizontalLabels = [];
+		var datasetData = [];
+		var datasetLabel = options.datasetLabel ? options.datasetLabel : "Value"
+		var minValue = options.minValue ? options.minValue : 0;
+		var maxValue = minValue + 10;
 		
-		for (var i = 0; i < json.data.length; i++) {
-			var date = new Date(json.data[i].timestamp);
-			var value = json.data[i].data;
-			horizontalLabels.push(date.toLocaleString());
-			datasetData.push(value);
-			if (value > maxTemperature) {
-				maxTemperature = value;
+		getJSON(dataUrl + '?' + urlParams, function(err, json) {
+			if (err) {
+				alert(err);
+				return;
 			}
-		}
+			
+			for (var i = 0; i < json.data.length; i++) {
+				var date = new Date(json.data[i].timestamp);
+				var value = json.data[i].data;
+				horizontalLabels.push(date.toLocaleString());
+				datasetData.push(value);
+				if (value > maxValue) {
+					maxValue = value;
+				}
+			}
+	
+			if (chart) {
+				chart.destroy();
+			}
+			chart = baseLineChart(chartElementId, datasetData, datasetLabel, horizontalLabels, minValue, maxValue);
+		});
+	}
 
-		console.log(horizontalLabels, datasetData);
-		baseLineChart(elementId, datasetData, "Temperature", horizontalLabels, minTemperature, maxTemperature);
-	});
+	var minValue = parseFloat(formElement.querySelector('#minValue').value);
+	var dimension = formElement.querySelector("#dimension").value;
+	buildLineChart({ minValue: minValue, dimension: dimension });
 }
 
 var baseLineChart = function(elementId, data, datasetLabel, horizontalLabels, verticalScaleMin, verticalScaleMax) {
 	var ctx = document.getElementById(elementId).getContext('2d');	
-	var myChart = new Chart(ctx, {
+	return new Chart(ctx, {
 		type: 'line',
 		data: {
 			labels: horizontalLabels,

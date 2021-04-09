@@ -4,16 +4,41 @@
 <title>Sensor Monitor Viewer</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="js/linechart1.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style>
 #parinTemperatureChart { max-width: 100%; max-height: 80vh }
 </style>
 </head>
 <body>
 
-<h1>Sensor Monitor Viewer</h1>
+<div class="container">
+    <h1>Sensor Monitor Viewer</h1>
 
-<canvas id="parinTemperatureChart" width="400" height="400"></canvas>
-<script>sensorLineChart("parinTemperatureChart", 84.3, "http://localhost:8080/v1/sensors/1/numeric-data");</script>
+    <form id="sensorOptions">
+        <div class="form-row">
+            <div class="col-4">
+                <label for="minValue mb-2">Minimum Temperature</label>
+                <input type="number" class="form-control mb-2" id="minValue" name="minValue" value="84.3" />
+            </div>
+        
+            <div class="col-4">
+                <label for="dimension mb-2">Dimension</label>
+                <select class="form-control mb-2" id="dimension" name="dimension">
+                    <option value="hour">Hour</option>
+                    <option value="minute" selected>Minute</option>
+                    <option value="second">Second</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+
+    <canvas id="parinTemperatureChart" width="400" height="400"></canvas>
+    <script>loadChart("parinTemperatureChart", "sensorOptions", "http://localhost:8080/v1/sensors/1/numeric-data", { datasetLabel: "Temperature" });</script>
+
+</div>
 
 </body>
 </html>
